@@ -57,6 +57,22 @@ export function useRankings() {
     }
   }
 
+  async function loadFromUrl(url: string) {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`Failed to fetch rankings (${res.status})`)
+      const text = await res.text()
+      const parsed = await parseCsvRankings(text)
+      await applySleeperMatching(parsed)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load rankings')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   async function loadFromText(csvText: string) {
     setLoading(true)
     setError(null)
@@ -85,5 +101,5 @@ export function useRankings() {
     store.setStep('tracking')
   }
 
-  return { loading, error, unmatchedCount, loadFromFile, loadFromText, skipToTracking }
+  return { loading, error, unmatchedCount, loadFromFile, loadFromText, loadFromUrl, skipToTracking }
 }

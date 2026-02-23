@@ -18,7 +18,7 @@ export function RankingsStep() {
   const [pasteMode, setPasteMode] = useState(false)
   const [pasteText, setPasteText] = useState('')
   const { selectedDraft } = useDraftStore()
-  const { loading, error, unmatchedCount, loadFromFile, loadFromText } = useRankings()
+  const { loading, error, unmatchedCount, loadFromFile, loadFromText, loadFromUrl } = useRankings()
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -64,6 +64,29 @@ export function RankingsStep() {
           )}
 
           <div className="grid gap-4">
+            {/* Default rankings */}
+            <button
+              onClick={() => loadFromUrl(`${import.meta.env.BASE_URL}draft_board.csv`)}
+              className="flex items-center justify-between rounded-xl border-2 border-brand-200 bg-brand-50 px-5 py-4 text-left hover:border-brand-400 hover:bg-brand-100 transition-colors"
+            >
+              <div>
+                <p className="text-sm font-semibold text-brand-900">Use default rankings</p>
+                <p className="text-xs text-brand-600 mt-0.5">Load the built-in draft board — no upload needed</p>
+              </div>
+              <svg className="h-5 w-5 shrink-0 text-brand-500 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-3 text-gray-400">or upload your own</span>
+              </div>
+            </div>
+
             {/* File upload */}
             <div
               onClick={() => fileInputRef.current?.click()}
