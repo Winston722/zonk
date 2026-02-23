@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { SleeperDraft, SleeperLeague, SleeperPick, SleeperUser } from '@/types/sleeper'
 import type { RankedPlayer } from '@/types/player'
 import type { PositionFilter } from '@/types/draft'
@@ -60,21 +61,39 @@ const initialState = {
   pollError: null,
 }
 
-export const useDraftStore = create<DraftStore>((set) => ({
-  ...initialState,
+export const useDraftStore = create<DraftStore>()(
+  persist(
+    (set) => ({
+      ...initialState,
 
-  setStep: (step) => set({ step }),
-  setUser: (user) => set({ user }),
-  setLeagues: (leagues) => set({ leagues }),
-  setSelectedLeague: (selectedLeague) => set({ selectedLeague }),
-  setDrafts: (drafts) => set({ drafts }),
-  setSelectedDraft: (selectedDraft) => set({ selectedDraft }),
-  setRankings: (rankings) => set({ rankings }),
-  setRawPicks: (rawPicks) => set({ rawPicks }),
-  setPositionFilter: (positionFilter) => set({ positionFilter }),
-  setShowDrafted: (showDrafted) => set({ showDrafted }),
-  setSearchQuery: (searchQuery) => set({ searchQuery }),
-  setLastUpdated: (lastUpdated) => set({ lastUpdated }),
-  setPollError: (pollError) => set({ pollError }),
-  reset: () => set(initialState),
-}))
+      setStep: (step) => set({ step }),
+      setUser: (user) => set({ user }),
+      setLeagues: (leagues) => set({ leagues }),
+      setSelectedLeague: (selectedLeague) => set({ selectedLeague }),
+      setDrafts: (drafts) => set({ drafts }),
+      setSelectedDraft: (selectedDraft) => set({ selectedDraft }),
+      setRankings: (rankings) => set({ rankings }),
+      setRawPicks: (rawPicks) => set({ rawPicks }),
+      setPositionFilter: (positionFilter) => set({ positionFilter }),
+      setShowDrafted: (showDrafted) => set({ showDrafted }),
+      setSearchQuery: (searchQuery) => set({ searchQuery }),
+      setLastUpdated: (lastUpdated) => set({ lastUpdated }),
+      setPollError: (pollError) => set({ pollError }),
+      reset: () => set(initialState),
+    }),
+    {
+      name: 'zonk_draft_store',
+      // Only persist meaningful state — skip transient UI and re-fetchable list data
+      partialize: (state) => ({
+        step: state.step,
+        user: state.user,
+        selectedLeague: state.selectedLeague,
+        selectedDraft: state.selectedDraft,
+        rankings: state.rankings,
+        rawPicks: state.rawPicks,
+        positionFilter: state.positionFilter,
+        showDrafted: state.showDrafted,
+      }),
+    },
+  ),
+)
