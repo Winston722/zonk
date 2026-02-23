@@ -56,6 +56,7 @@ export async function parseCsvRankings(source: File | string): Promise<RankedPla
   const result = Papa.parse<RawRow>(text, {
     header: true,
     skipEmptyLines: true,
+    delimiter: ',',
     // Strip BOM, zero-width characters, and surrounding whitespace from headers
     transformHeader: (h: string) =>
       h

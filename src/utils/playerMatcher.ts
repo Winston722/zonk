@@ -16,6 +16,8 @@ interface SleeperEntry {
   normName: string
   position: string
   team: string
+  age: number | null
+  yearsExp: number | null
 }
 
 function buildIndex(players: SleeperPlayersMap): SleeperEntry[] {
@@ -26,6 +28,8 @@ function buildIndex(players: SleeperPlayersMap): SleeperEntry[] {
       normName: normaliseName(p.full_name ?? `${p.first_name} ${p.last_name}`),
       position: p.position.toUpperCase(),
       team: (p.team ?? '').toUpperCase(),
+      age: p.age ?? null,
+      yearsExp: p.years_exp ?? null,
     }))
 }
 
@@ -60,7 +64,17 @@ export function matchRankingsToSleeper(
       }
     }
 
-    return match ? { ...player, sleeperId: match.id } : player
+    if (!match) return player
+
+    return {
+      ...player,
+      sleeperId: match.id,
+      // Backfill fields not provided in the CSV from Sleeper's player DB
+      position: player.position || match.position,
+      team: player.team || match.team,
+      age: player.age ?? match.age,
+      yearsExp: player.yearsExp ?? match.yearsExp,
+    }
   })
 }
 

@@ -6,7 +6,7 @@ import { Spinner } from '@/components/common/Spinner'
 import { useDraftStore } from '@/store/draftStore'
 import { useRankings } from '@/hooks/useRankings'
 
-const EXAMPLE_CSV = `name,position,age,years_exp,ppg,availability_score,risk_cv,dcf_value,replacement_value,value_above_replacement
+const EXAMPLE_CSV = `full_name,position,age,years_exp,ppg,availability_score,risk_cv,dcf_value,replacement_value,value_above_replacement
 Christian McCaffrey,RB,28,7,22.4,0.91,0.18,145.2,88.1,57.1
 CeeDee Lamb,WR,25,4,19.8,0.88,0.21,138.7,82.4,56.3
 Tyreek Hill,WR,30,9,18.6,0.85,0.24,131.0,80.2,50.8
@@ -120,7 +120,7 @@ export function RankingsStep() {
               {EXAMPLE_CSV}
             </pre>
             <p className="mt-2 text-xs text-gray-500">
-              Required: <code>name</code>. Expected columns: <code>position</code>, <code>age</code>, <code>years_exp</code>, <code>ppg</code>, <code>availability_score</code>, <code>risk_cv</code>, <code>dcf_value</code>, <code>replacement_value</code>, <code>value_above_replacement</code>.<br />
+              Required: <code>full_name</code>. Expected columns: <code>position</code>, <code>age</code>, <code>years_exp</code>, <code>ppg</code>, <code>availability_score</code>, <code>risk_cv</code>, <code>dcf_value</code>, <code>replacement_value</code>, <code>value_above_replacement</code>.<br />
               Players are sorted by <strong>Value Above Replacement</strong> (highest = rank 1). Column headers are flexible — spaces, underscores, and capitalisation are ignored.
             </p>
           </details>
