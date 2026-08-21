@@ -20,17 +20,39 @@ interface SleeperEntry {
   yearsExp: number | null
 }
 
-function buildIndex(players: SleeperPlayersMap): SleeperEntry[] {
-  return Object.entries(players)
-    .filter(([, p]) => p.position && (p.full_name ?? p.first_name))
-    .map(([id, p]) => ({
+interface SleeperIndex {
+  byNamePos: Map<string, SleeperEntry>
+  byName: Map<string, SleeperEntry>
+  byLastNamePos: Map<string, SleeperEntry>
+}
+
+function buildIndex(players: SleeperPlayersMap): SleeperIndex {
+  const byNamePos = new Map<string, SleeperEntry>()
+  const byName = new Map<string, SleeperEntry>()
+  const byLastNamePos = new Map<string, SleeperEntry>()
+
+  for (const [id, p] of Object.entries(players)) {
+    if (!p.position || !(p.full_name ?? p.first_name)) continue
+    const entry: SleeperEntry = {
       id,
       normName: normaliseName(p.full_name ?? `${p.first_name} ${p.last_name}`),
       position: p.position.toUpperCase(),
       team: (p.team ?? '').toUpperCase(),
       age: p.age ?? null,
       yearsExp: p.years_exp ?? null,
-    }))
+    }
+    if (!byNamePos.has(`${entry.normName}|${entry.position}`)) {
+      byNamePos.set(`${entry.normName}|${entry.position}`, entry)
+    }
+    if (!byName.has(entry.normName)) byName.set(entry.normName, entry)
+    const parts = entry.normName.split(' ')
+    const lastName = parts[parts.length - 1] ?? ''
+    if (lastName.length > 2 && !byLastNamePos.has(`${lastName}|${entry.position}`)) {
+      byLastNamePos.set(`${lastName}|${entry.position}`, entry)
+    }
+  }
+
+  return { byNamePos, byName, byLastNamePos }
 }
 
 export function matchRankingsToSleeper(
@@ -44,11 +66,11 @@ export function matchRankingsToSleeper(
     const pos = player.position.toUpperCase()
 
     // 1. Exact name + position
-    let match = index.find((e) => e.normName === norm && e.position === pos)
+    let match = index.byNamePos.get(`${norm}|${pos}`)
 
     // 2. Exact name only
     if (!match) {
-      match = index.find((e) => e.normName === norm)
+      match = index.byName.get(norm)
     }
 
     // 3. Last-word of name + position (catches "Patrick Mahomes" vs "Mahomes")
@@ -56,11 +78,7 @@ export function matchRankingsToSleeper(
       const parts = norm.split(' ')
       const lastName = parts[parts.length - 1] ?? ''
       if (lastName.length > 2) {
-        match = index.find(
-          (e) =>
-            e.position === pos &&
-            (e.normName.endsWith(` ${lastName}`) || e.normName === lastName),
-        )
+        match = index.byLastNamePos.get(`${lastName}|${pos}`)
       }
     }
 
@@ -88,14 +106,19 @@ export function applyPicksToRankings(
     player_id: string
     pick_no: number
     round: number
-    metadata: { first_name: string; last_name: string }
+    metadata?: { first_name?: string; last_name?: string }
     picked_by: string
   }>,
   managerNames: Record<string, string>,
 ): RankedPlayer[] {
   const pickedById = new Map(picks.map((p) => [p.player_id, p]))
   const pickedByName = new Map(
-    picks.map((p) => [normaliseName(`${p.metadata.first_name} ${p.metadata.last_name}`), p]),
+    picks
+      .filter((p) => p.metadata?.first_name || p.metadata?.last_name)
+      .map((p) => [
+        normaliseName(`${p.metadata?.first_name ?? ''} ${p.metadata?.last_name ?? ''}`),
+        p,
+      ]),
   )
 
   return rankings.map((player) => {

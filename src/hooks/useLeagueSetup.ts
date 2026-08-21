@@ -95,6 +95,9 @@ export function useLeagueSetup() {
     const draft = store.drafts.find((d) => d.draft_id === draftId)
     if (!draft) return
     store.setSelectedDraft(draft)
+    // Clear picks from any previously tracked draft
+    store.setRawPicks([])
+    store.setPollError(null)
     store.setStep('rankings')
   }
 
@@ -106,6 +109,8 @@ export function useLeagueSetup() {
       if (!draft?.draft_id) throw new Error('Draft not found')
       store.setDrafts([draft])
       store.setSelectedDraft(draft)
+      store.setRawPicks([])
+      store.setPollError(null)
       store.setStep('rankings')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not load draft')

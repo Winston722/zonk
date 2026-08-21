@@ -1,5 +1,4 @@
 import { useDraftStore } from '@/store/draftStore'
-import { useDraftPolling } from '@/hooks/useDraftPolling'
 import { Button } from '@/components/common/Button'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -9,9 +8,12 @@ const STATUS_COLORS: Record<string, string> = {
   pre_draft: 'bg-blue-100 text-blue-800',
 }
 
-export function DraftHeader() {
+interface DraftHeaderProps {
+  onRefresh: () => void
+}
+
+export function DraftHeader({ onRefresh }: DraftHeaderProps) {
   const { selectedDraft, selectedLeague, lastUpdated, pollError, rawPicks } = useDraftStore()
-  const { manualRefresh } = useDraftPolling()
 
   if (!selectedDraft) return null
 
@@ -47,7 +49,7 @@ export function DraftHeader() {
             Updated {lastUpdated.toLocaleTimeString()}
           </span>
         )}
-        <Button variant="secondary" size="sm" onClick={manualRefresh}>
+        <Button variant="secondary" size="sm" onClick={onRefresh}>
           ↻ Refresh
         </Button>
         <Button
