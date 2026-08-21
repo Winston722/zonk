@@ -114,6 +114,12 @@ export async function parseCsvRankings(source: File | string): Promise<RankedPla
     })
     .filter((p): p is RankedPlayer => p !== null)
 
+  if (players.length === 0) {
+    throw new Error(
+      'No players found in the CSV. Check that it has a header row with a "full_name" (or "name" / "player") column.',
+    )
+  }
+
   // Sort by VAR descending; fall back to original row order if no VAR present
   const hasVar = players.some((p) => p.var !== null)
   if (hasVar) {

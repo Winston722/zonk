@@ -7,7 +7,7 @@ import { useDraftStore } from '@/store/draftStore'
 
 export function TrackingView() {
   // Start polling when this component mounts
-  useDraftPolling(1000)
+  const { manualRefresh } = useDraftPolling(3000)
 
   const { rankings } = useDraftStore()
 
@@ -21,7 +21,7 @@ export function TrackingView() {
 
   return (
     <div className="space-y-5">
-      <DraftHeader />
+      <DraftHeader onRefresh={manualRefresh} />
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
         {/* Main rankings table */}
         <PlayerTable />

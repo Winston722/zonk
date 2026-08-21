@@ -13,7 +13,7 @@ import type { SleeperPick } from '@/types/sleeper'
  */
 export function useDraftPolling(intervalMs = 5000) {
   const pollerRef = useRef<DraftPoller | null>(null)
-  const selectedDraft = useDraftStore((s) => s.selectedDraft)
+  const draftId = useDraftStore((s) => s.selectedDraft?.draft_id)
 
   const handlePicksUpdate = useCallback((picks: SleeperPick[]) => {
     const { rankings, setRawPicks, setLastUpdated, setPollError, setRankings } =
@@ -30,10 +30,10 @@ export function useDraftPolling(intervalMs = 5000) {
   }, [])
 
   useEffect(() => {
-    if (!selectedDraft) return
+    if (!draftId) return
 
     pollerRef.current = new DraftPoller({
-      draftId: selectedDraft.draft_id,
+      draftId,
       intervalMs,
       onPicksUpdate: handlePicksUpdate,
       onError: (err) => useDraftStore.getState().setPollError(err.message),
@@ -44,7 +44,7 @@ export function useDraftPolling(intervalMs = 5000) {
       pollerRef.current?.stop()
       pollerRef.current = null
     }
-  }, [selectedDraft?.draft_id, intervalMs, handlePicksUpdate])
+  }, [draftId, intervalMs, handlePicksUpdate])
 
   const manualRefresh = useCallback(() => {
     void pollerRef.current?.refresh()
