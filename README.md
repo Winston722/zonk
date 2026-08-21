@@ -51,19 +51,16 @@ leagues — bring your own rankings for redraft formats.
 
 ## Sharing / deploying
 
-The app deploys automatically to **GitHub Pages** on every push to `main`
-(see `.github/workflows/deploy.yml`). Share this link with your league:
-
-**https://winston722.github.io/zonk/**
-
-Everyone you share the URL with can track their own drafts; all state stays in
-their own browser — there's no server and no secrets.
-
-Zonk is fully static, so any other host works too:
+Zonk is a fully static app — no server, no secrets, no login. Everyone you
+share the deployed URL with can track their own drafts; all state stays in
+their own browser.
 
 ```bash
-npm run build   # outputs to dist/ — deploy anywhere (Vercel, Netlify, …)
+npm run build   # outputs to dist/ — deploy anywhere (Netlify, Vercel, …)
 ```
+
+The build uses relative asset paths (`base: './'`), so it works served from a
+domain root or from any subpath.
 
 ## Tech
 
