@@ -5,7 +5,7 @@ import { Badge } from '@/components/common/Badge'
 const SHOW_LAST = 8
 
 export function RecentPicks() {
-  const { rawPicks } = useDraftStore()
+  const { rawPicks, managerNames } = useDraftStore()
 
   const recent = useMemo(
     () => [...rawPicks].sort((a, b) => b.pick_no - a.pick_no).slice(0, SHOW_LAST),
@@ -39,8 +39,15 @@ export function RecentPicks() {
               variant="position"
               position={pick.metadata.position}
             />
-            <span className="flex-1 font-medium text-gray-900 truncate">
-              {pick.metadata.first_name} {pick.metadata.last_name}
+            <span className="flex-1 min-w-0">
+              <span className="block truncate font-medium text-gray-900">
+                {pick.metadata.first_name} {pick.metadata.last_name}
+              </span>
+              {managerNames[pick.picked_by] && (
+                <span className="block truncate text-xs text-gray-400">
+                  {managerNames[pick.picked_by]}
+                </span>
+              )}
             </span>
             <span className="text-xs text-gray-400">{pick.metadata.team}</span>
           </li>

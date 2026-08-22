@@ -106,6 +106,7 @@ export function applyPicksToRankings(
     player_id: string
     pick_no: number
     round: number
+    draft_slot?: number
     metadata?: { first_name?: string; last_name?: string }
     picked_by: string
   }>,
@@ -133,7 +134,9 @@ export function applyPicksToRankings(
       isDrafted: true,
       pickNumber: pick.pick_no,
       round: pick.round,
-      draftedBy: managerNames[pick.picked_by] ?? pick.picked_by,
+      draftedBy:
+        managerNames[pick.picked_by] ??
+        (pick.picked_by || (pick.draft_slot !== undefined ? `Slot ${pick.draft_slot}` : null)),
     }
   })
 }

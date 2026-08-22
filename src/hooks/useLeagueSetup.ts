@@ -3,6 +3,30 @@ import { sleeperApi } from '@/api/sleeper'
 import { useDraftStore } from '@/store/draftStore'
 import type { SleeperDraft, SleeperLeague } from '@/types/sleeper'
 
+let seasonsCache: [string, string] | null = null
+
+/**
+ * The current and previous league seasons, from Sleeper's /state/nfl endpoint
+ * (authoritative around season boundaries), falling back to calendar years.
+ */
+async function getSeasons(): Promise<[string, string]> {
+  if (seasonsCache) return seasonsCache
+  try {
+    const state = await sleeperApi.getNflState()
+    if (state?.league_season) {
+      seasonsCache = [
+        state.league_season,
+        state.previous_season || String(Number(state.league_season) - 1),
+      ]
+      return seasonsCache
+    }
+  } catch {
+    // fall through to calendar-year guess
+  }
+  const year = new Date().getFullYear()
+  return [String(year), String(year - 1)]
+}
+
 function dedupeBy<T>(arr: T[], key: (item: T) => string): T[] {
   const seen = new Set<string>()
   return arr.filter((item) => {
@@ -27,11 +51,11 @@ export function useLeagueSetup() {
       if (!user?.user_id) throw new Error(`User "${username}" not found`)
       store.setUser(user)
 
-      // Try current year and previous year — NFL seasons span two calendar years
-      const thisYear = new Date().getFullYear()
+      // Query the current and previous seasons per Sleeper's own state endpoint
+      const [currentSeason, previousSeason] = await getSeasons()
       const [current, previous] = await Promise.allSettled([
-        sleeperApi.getLeaguesForUser(user.user_id, String(thisYear)),
-        sleeperApi.getLeaguesForUser(user.user_id, String(thisYear - 1)),
+        sleeperApi.getLeaguesForUser(user.user_id, currentSeason),
+        sleeperApi.getLeaguesForUser(user.user_id, previousSeason),
       ])
 
       const leagues: SleeperLeague[] = [
@@ -56,17 +80,17 @@ export function useLeagueSetup() {
     try {
       store.setSelectedLeague(league)
 
-      const thisYear = new Date().getFullYear()
+      const [currentSeason, previousSeason] = await getSeasons()
       const userId = store.user?.user_id
 
-      // Fetch from league endpoint + user endpoint for both years (mock drafts
+      // Fetch from league endpoint + user endpoint for both seasons (mock drafts
       // often only appear in the user-level endpoint)
       const fetches = [
         sleeperApi.getDraftsForLeague(leagueId),
         ...(userId
           ? [
-              sleeperApi.getDraftsForUser(userId, String(thisYear)),
-              sleeperApi.getDraftsForUser(userId, String(thisYear - 1)),
+              sleeperApi.getDraftsForUser(userId, currentSeason),
+              sleeperApi.getDraftsForUser(userId, previousSeason),
             ]
           : []),
       ]

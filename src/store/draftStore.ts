@@ -19,6 +19,9 @@ interface DraftStore {
   rankings: RankedPlayer[]
   rawPicks: SleeperPick[]
 
+  /** Sleeper user_id → display/team name for the active league */
+  managerNames: Record<string, string>
+
   // Filters
   positionFilter: PositionFilter
   showDrafted: boolean
@@ -37,6 +40,7 @@ interface DraftStore {
   setSelectedDraft: (draft: SleeperDraft) => void
   setRankings: (rankings: RankedPlayer[]) => void
   setRawPicks: (picks: SleeperPick[]) => void
+  setManagerNames: (names: Record<string, string>) => void
   setPositionFilter: (pos: PositionFilter) => void
   setShowDrafted: (show: boolean) => void
   setSearchQuery: (q: string) => void
@@ -54,6 +58,7 @@ const initialState = {
   selectedDraft: null,
   rankings: [],
   rawPicks: [],
+  managerNames: {},
   positionFilter: 'ALL' as PositionFilter,
   showDrafted: false,
   searchQuery: '',
@@ -74,6 +79,7 @@ export const useDraftStore = create<DraftStore>()(
       setSelectedDraft: (selectedDraft) => set({ selectedDraft }),
       setRankings: (rankings) => set({ rankings }),
       setRawPicks: (rawPicks) => set({ rawPicks }),
+      setManagerNames: (managerNames) => set({ managerNames }),
       setPositionFilter: (positionFilter) => set({ positionFilter }),
       setShowDrafted: (showDrafted) => set({ showDrafted }),
       setSearchQuery: (searchQuery) => set({ searchQuery }),
