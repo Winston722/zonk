@@ -79,11 +79,12 @@ export interface SleeperPick {
   picked_by: string
   pick_no: number
   draft_slot: number
-  metadata: {
-    first_name: string
-    last_name: string
-    position: string
-    team: string
+  /** Usually present, but treat as optional — a missing field must never crash the tracker */
+  metadata?: {
+    first_name?: string
+    last_name?: string
+    position?: string
+    team?: string
     number?: string
     years_exp?: string
   }

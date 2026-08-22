@@ -22,16 +22,21 @@ export function DraftHeader({ onRefresh }: DraftHeaderProps) {
   function shareLink() {
     if (!selectedDraft) return
     const url = `${window.location.origin}${window.location.pathname}?draft=${selectedDraft.draft_id}`
-    navigator.clipboard
-      .writeText(url)
-      .then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      })
-      .catch(() => {
-        // clipboard unavailable (http, permissions) — show the URL instead
-        window.prompt('Copy this link:', url)
-      })
+    // navigator.clipboard only exists in secure contexts (https/localhost) —
+    // never assume it's there
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 2000)
+        })
+        .catch(() => {
+          window.prompt('Copy this link:', url)
+        })
+    } else {
+      window.prompt('Copy this link:', url)
+    }
   }
 
   if (!selectedDraft) return null

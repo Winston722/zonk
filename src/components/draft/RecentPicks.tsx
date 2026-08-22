@@ -35,13 +35,13 @@ export function RecentPicks() {
               {pick.round}.{pick.draft_slot}
             </span>
             <Badge
-              label={pick.metadata.position}
+              label={pick.metadata?.position ?? '—'}
               variant="position"
-              position={pick.metadata.position}
+              position={pick.metadata?.position}
             />
             <span className="flex-1 min-w-0">
               <span className="block truncate font-medium text-gray-900">
-                {pick.metadata.first_name} {pick.metadata.last_name}
+                {pick.metadata?.first_name} {pick.metadata?.last_name}
               </span>
               {managerNames[pick.picked_by] && (
                 <span className="block truncate text-xs text-gray-400">
@@ -49,7 +49,7 @@ export function RecentPicks() {
                 </span>
               )}
             </span>
-            <span className="text-xs text-gray-400">{pick.metadata.team}</span>
+            <span className="text-xs text-gray-400">{pick.metadata?.team}</span>
           </li>
         ))}
       </ol>

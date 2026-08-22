@@ -20,7 +20,8 @@ function col(row: RawRow, ...keys: string[]): string {
 }
 
 function parseNumber(s: string): number | null {
-  const n = parseFloat(s)
+  // Tolerate thousands separators and stray % signs from spreadsheet exports
+  const n = parseFloat(s.replace(/[,%\s]/g, ''))
   return isNaN(n) ? null : n
 }
 
@@ -56,7 +57,8 @@ export async function parseCsvRankings(source: File | string): Promise<RankedPla
   const result = Papa.parse<RawRow>(text, {
     header: true,
     skipEmptyLines: true,
-    delimiter: ',',
+    // Auto-detect the delimiter — Excel exports use ';' in many locales
+    delimitersToGuess: [',', ';', '\t', '|'],
     // Strip BOM, zero-width characters, and surrounding whitespace from headers
     transformHeader: (h: string) =>
       h
@@ -65,11 +67,9 @@ export async function parseCsvRankings(source: File | string): Promise<RankedPla
         .trim(),
   })
 
-  if (result.errors.length > 0) {
-    const fatal = result.errors.find((e) => e.type === 'Delimiter')
-    if (fatal) throw new Error(`CSV parse error: ${fatal.message}`)
-  }
-
+  // Papa reports a Delimiter "error" when it can't auto-detect and falls back
+  // to ','. That's benign — an unparseable file surfaces as zero players below,
+  // which produces a clearer message for the user anyway.
   const players = result.data
     .map((row): RankedPlayer | null => {
       const name = col(row, 'name', 'player', 'player_name', 'player name', 'full_name')

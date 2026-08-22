@@ -55,6 +55,9 @@ export class DraftPoller {
   private async poll(): Promise<void> {
     try {
       const picks = await sleeperApi.getPicks(this.draftId)
+      if (!Array.isArray(picks)) {
+        throw new Error('Unexpected response from Sleeper picks endpoint')
+      }
       if (picks.length !== this.lastPickCount) {
         this.lastPickCount = picks.length
         this.onPicksUpdate(picks)
