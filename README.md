@@ -10,8 +10,12 @@ available players float to the top — so you always know who to take next.
 - **Pick your league and draft**, or paste a draft ID directly (works for mock drafts too)
 - **Bring your own rankings** as a CSV (upload, paste, or use the bundled default board)
 - **Live tracking** — polls the draft every few seconds, marks drafted players, and highlights your top available targets
+- **On-the-clock alerts** — shows whose pick it is, counts down to your turn (snake, linear, and third-round-reversal aware), and can fire a browser notification when you're up
+- **Team rosters** — see every manager's picks so far, with position counts
+- **Shareable links** — the Share button copies a `?draft=<id>` link that drops league mates straight into the draft, no setup steps
+- **CSV export** — download the final board (who went where, drafted by whom) when it's over
 - **Filters** — by position (including IDP: DL/LB/DB), search, and show/hide drafted
-- **Resilient** — state persists in your browser, so a page reload during the draft won't lose anything
+- **Resilient** — state persists in your browser so a reload won't lose anything, polling pauses while the tab is hidden and stops when the draft completes, and a crash screen offers a one-click reset
 
 ## Quick start
 
@@ -48,6 +52,7 @@ leagues — bring your own rankings for redraft formats.
 | `npm run preview`   | Preview the production build    |
 | `npm run lint`      | Run ESLint                      |
 | `npm run typecheck` | Type-check without emitting     |
+| `npm test`          | Run the Vitest suite            |
 
 ## Sharing / deploying
 

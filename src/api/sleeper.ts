@@ -1,7 +1,9 @@
 import type {
   SleeperUser,
   SleeperLeague,
+  SleeperLeagueUser,
   SleeperDraft,
+  SleeperNflState,
   SleeperPick,
   SleeperPlayersMap,
 } from '@/types/sleeper'
@@ -23,6 +25,15 @@ export const sleeperApi = {
 
   getLeaguesForUser(userId: string, season: string): Promise<SleeperLeague[]> {
     return get<SleeperLeague[]>(`/user/${userId}/leagues/nfl/${season}`)
+  },
+
+  getLeagueUsers(leagueId: string): Promise<SleeperLeagueUser[]> {
+    return get<SleeperLeagueUser[]>(`/league/${leagueId}/users`)
+  },
+
+  /** Current NFL season info — the authoritative source for which season to query */
+  getNflState(): Promise<SleeperNflState> {
+    return get<SleeperNflState>('/state/nfl')
   },
 
   getDraft(draftId: string): Promise<SleeperDraft> {

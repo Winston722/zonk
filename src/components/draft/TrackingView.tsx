@@ -1,13 +1,17 @@
 import { DraftHeader } from './DraftHeader'
+import { OnTheClock } from './OnTheClock'
 import { TopAvailable } from './TopAvailable'
 import { RecentPicks } from './RecentPicks'
+import { TeamRosters } from './TeamRosters'
 import { PlayerTable } from '@/components/players/PlayerTable'
 import { useDraftPolling } from '@/hooks/useDraftPolling'
+import { useManagerNames } from '@/hooks/useManagerNames'
 import { useDraftStore } from '@/store/draftStore'
 
 export function TrackingView() {
   // Start polling when this component mounts
   const { manualRefresh } = useDraftPolling(3000)
+  useManagerNames()
 
   const { rankings } = useDraftStore()
 
@@ -22,6 +26,7 @@ export function TrackingView() {
   return (
     <div className="space-y-5">
       <DraftHeader onRefresh={manualRefresh} />
+      <OnTheClock />
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1fr_320px]">
         {/* Main rankings table */}
         <PlayerTable />
@@ -30,6 +35,7 @@ export function TrackingView() {
         <div className="flex flex-col gap-5">
           <TopAvailable />
           <RecentPicks />
+          <TeamRosters />
         </div>
       </div>
     </div>

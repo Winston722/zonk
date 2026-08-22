@@ -7,6 +7,22 @@ export interface SleeperUser {
   avatar: string | null
 }
 
+export interface SleeperLeagueUser {
+  user_id: string
+  display_name: string
+  metadata?: {
+    team_name?: string
+  }
+}
+
+export interface SleeperNflState {
+  season: string
+  league_season: string
+  previous_season: string
+  season_type: string
+  week: number
+}
+
 export interface SleeperLeague {
   league_id: string
   name: string
@@ -24,7 +40,8 @@ export interface SleeperLeague {
 
 export interface SleeperDraft {
   draft_id: string
-  league_id: string
+  /** Null for mock drafts, which belong to no league */
+  league_id: string | null
   type: 'snake' | 'linear' | 'auction'
   status: 'pre_draft' | 'drafting' | 'complete' | 'paused'
   season: string
@@ -43,6 +60,8 @@ export interface SleeperDraft {
     slots_def: number
     slots_flex: number
     slots_super_flex: number
+    /** Round at which snake direction reverses again (3 = third round reversal) */
+    reversal_round?: number
   }
   draft_order: Record<string, number> | null
   slot_to_roster_id: Record<string, number> | null

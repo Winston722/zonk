@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useDraftStore } from '@/store/draftStore'
 import { Button } from '@/components/common/Button'
+import { downloadDraftBoard } from '@/utils/exportCsv'
 
 const STATUS_COLORS: Record<string, string> = {
   drafting: 'bg-green-100 text-green-800',
@@ -13,7 +15,24 @@ interface DraftHeaderProps {
 }
 
 export function DraftHeader({ onRefresh }: DraftHeaderProps) {
-  const { selectedDraft, selectedLeague, lastUpdated, pollError, rawPicks } = useDraftStore()
+  const { selectedDraft, selectedLeague, lastUpdated, pollError, rawPicks, rankings } =
+    useDraftStore()
+  const [copied, setCopied] = useState(false)
+
+  function shareLink() {
+    if (!selectedDraft) return
+    const url = `${window.location.origin}${window.location.pathname}?draft=${selectedDraft.draft_id}`
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      })
+      .catch(() => {
+        // clipboard unavailable (http, permissions) — show the URL instead
+        window.prompt('Copy this link:', url)
+      })
+  }
 
   if (!selectedDraft) return null
 
@@ -49,6 +68,16 @@ export function DraftHeader({ onRefresh }: DraftHeaderProps) {
             Updated {lastUpdated.toLocaleTimeString()}
           </span>
         )}
+        <Button variant="secondary" size="sm" onClick={shareLink}>
+          {copied ? '✓ Copied!' : '🔗 Share'}
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => downloadDraftBoard(rankings, selectedDraft.draft_id)}
+        >
+          ⬇ Export CSV
+        </Button>
         <Button variant="secondary" size="sm" onClick={onRefresh}>
           ↻ Refresh
         </Button>

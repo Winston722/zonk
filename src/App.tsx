@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { useDraftStore } from '@/store/draftStore'
+import { sleeperApi } from '@/api/sleeper'
 import { UsernameStep } from '@/components/setup/UsernameStep'
 import { LeagueStep } from '@/components/setup/LeagueStep'
 import { DraftStep } from '@/components/setup/DraftStep'
@@ -46,6 +48,27 @@ function StepIndicator() {
 
 export default function App() {
   const { step } = useDraftStore()
+
+  // Shared links: ?draft=<id> jumps straight to that draft, skipping setup
+  useEffect(() => {
+    const draftId = new URLSearchParams(window.location.search).get('draft')
+    if (!draftId) return
+    const store = useDraftStore.getState()
+    if (store.selectedDraft?.draft_id === draftId) return
+
+    sleeperApi
+      .getDraft(draftId)
+      .then((draft) => {
+        if (!draft?.draft_id) return
+        const s = useDraftStore.getState()
+        s.setDrafts([draft])
+        s.setSelectedDraft(draft)
+        s.setRawPicks([])
+        s.setPollError(null)
+        s.setStep('rankings')
+      })
+      .catch((e) => console.error('Failed to load shared draft link:', e))
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
