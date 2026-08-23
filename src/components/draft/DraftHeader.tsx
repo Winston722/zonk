@@ -64,7 +64,7 @@ export function DraftHeader({ onRefresh }: DraftHeaderProps) {
         </p>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         {pollError && (
           <span className="text-xs text-red-500">⚠ {pollError}</span>
         )}

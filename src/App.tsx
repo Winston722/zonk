@@ -21,7 +21,7 @@ function StepIndicator() {
   if (step === 'tracking') return null
 
   return (
-    <nav className="flex items-center gap-1" aria-label="Setup progress">
+    <nav className="hidden sm:flex items-center gap-1" aria-label="Setup progress">
       {steps.map((s, idx) => (
         <div key={s.id} className="flex items-center gap-1">
           <span
